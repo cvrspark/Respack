@@ -11,13 +11,13 @@ d888b    `Y8bod8P' 8""888P'  888bod8P' `Y888""8o `Y8bod8P' o888o o888o
 
 ```
 
-A lightweight command-line asset packaging and encryption tool written in C++26. It packs directories into single `.pkg` archives with optional Base64URL-encoded encryption.
+A lightweight command-line asset packaging and encryption tool written in C++26. It packs directories into single `.rvlt` archives with optional Base64URL-encoded encryption.
 
 ---
 
 ## Features
 
-- **Pack & Unpack**: Bundle directory trees into `.pkg` files and extract them back.
+- **Pack & Unpack**: Bundle directory trees into `.rvlt` files and extract them back.
 - **Encryption**: Optional symmetric encryption using ChaCha20.
 - **Key Generation**: Generate random Base64URL keys on the fly.
 - **Cross-Platform**: Zero external runtime dependencies (statically linked).
@@ -65,8 +65,8 @@ respack <function> <path> [flags]
 
 | Flag   | Long Flag      | Description                                             |
 | ------ | -------------- | ------------------------------------------------------- |
-| `-p`   | `--pack`       | Pack a directory into a `.pkg` archive                  |
-| `-u`   | `--unpack`     | Unpack a `.pkg` archive into a directory                |
+| `-p`   | `--pack`       | Pack a directory into a `.rvlt` archive                 |
+| `-u`   | `--unpack`     | Unpack a `.rvlt` archive into a directory               |
 | `-gk`  | `--genkey`     | Generate a new random Base64URL key                     |
 | `-pgk` | `--packgenkey` | Pack a directory and encrypt with a newly generated key |
 | `-h`   | `--help`       | Show usage/help message                                 |
@@ -93,9 +93,9 @@ respack -p ./assets
 respack -p ./assets --key=YOUR_BASE64URL_KEY
 
 # Pack, generate a new key, and output to a custom archive path
-respack -pgk ./assets -o ./game_data.pkg
+respack -pgk ./assets -o ./game_data.rvlt
 
 # Unpack an encrypted archive to a specific output folder
-respack -u ./game_data.pkg --key=YOUR_BASE64URL_KEY -o ./extracted_assets
+respack -u ./game_data.rvlt --key=YOUR_BASE64URL_KEY -o ./extracted_assets
 
 ```

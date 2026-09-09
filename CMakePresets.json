@@ -1,0 +1,39 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+            "name": "default-base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}"
+        },
+        {
+            "name": "dev",
+            "inherits": "default-base",
+            "displayName": "Development (Clang)",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "USE_GCC": "OFF"
+            }
+        },
+        {
+            "name": "release",
+            "inherits": "default-base",
+            "displayName": "Release Static (GCC)",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "USE_GCC": "ON"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "dev",
+            "configurePreset": "dev"
+        },
+        {
+            "name": "release",
+            "configurePreset": "release"
+        }
+    ]
+}

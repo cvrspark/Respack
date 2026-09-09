@@ -11,8 +11,8 @@ void print_help_msg(std::ostream& os = std::cout) {
        << "  respack <function> <path> [flags]\n"
        << "----------------------------------------\n"
        << "Functions:\n"
-       << "  -p, --pack         Pack directory to .pkg\n"
-       << "  -u, --unpack       Unpack .pkg archive\n"
+       << "  -p, --pack         Pack directory to .rvlt\n"
+       << "  -u, --unpack       Unpack .rvlt archive\n"
        << "  -gk, --genkey      Generate a new random key\n"
        << "  -pgk, --packgenkey Pack and encrypt directory with a newly generated key\n"
        << "----------------------------------------\n"
@@ -67,7 +67,7 @@ int main(int argc, char* argv[]) {
     respack::res result;
 
     if (action == "-p" || action == "--pack") {
-        std::string out_pkg = custom_output.empty() ? (target_path + ".pkg") : custom_output;
+        std::string out_pkg = custom_output.empty() ? (target_path + ".rvlt") : custom_output;
 
         if (!key_str.empty()) {
             std::vector<uint8_t> key = respack::key_from_string(key_str);
@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
         }
 
     } else if (action == "-pgk" || action == "--packgenkey") {
-        std::string out_pkg = custom_output.empty() ? (target_path + ".pkg") : custom_output;
+        std::string out_pkg = custom_output.empty() ? (target_path + ".rvlt") : custom_output;
 
         std::vector<uint8_t> key = respack::gen_key();
         std::string generated_key_str = respack::key_to_string(key);
