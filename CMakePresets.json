@@ -32,7 +32,11 @@
             "configurePreset": "dev"
         },
         {
-            "name": "release",
+            "name": "windows",
+            "configurePreset": "release"
+        },
+        {
+            "name": "linux",
             "configurePreset": "release"
         }
     ]
