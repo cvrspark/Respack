@@ -30,7 +30,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-
 #ifndef SPK_RESPACK_H
 #define SPK_RESPACK_H
 
@@ -402,8 +401,11 @@ static inline void spk_file_list_add(spk_file_list* list, const char* path) {
         list->capacity = list->capacity == 0 ? 16 : list->capacity * 2;
         list->paths = (char**)realloc(list->paths, list->capacity * sizeof(char*));
     }
-    list->paths[list->count] = (char*)malloc(strlen(path) + 1);
-    strcpy(list->paths[list->count], path);
+    size_t path_len = strlen(path);
+    list->paths[list->count] = (char*)malloc(path_len + 1);
+    if (list->paths[list->count]) {
+        memcpy(list->paths[list->count], path, path_len + 1);
+    }
     list->count++;
 }
 
@@ -536,8 +538,11 @@ static inline spk_res spk_pack_internal(const char* dir, const char* output_pkg,
         snprintf(rel_path_norm, sizeof(rel_path_norm), "%s", files.paths[i]);
         spk_normalize_path(rel_path_norm);
 
-        entries[i].rel_path = (char*)malloc(strlen(rel_path_norm) + 1);
-        strcpy(entries[i].rel_path, rel_path_norm);
+        size_t path_len = strlen(rel_path_norm);
+        entries[i].rel_path = (char*)malloc(path_len + 1);
+        if (entries[i].rel_path) {
+            memcpy(entries[i].rel_path, rel_path_norm, path_len + 1);
+        }
         entries[i].crc32 = spk_calculate_crc32(content, fsize);
         entries[i].size = (uint32_t)fsize;
         entries[i].local_header_offset = (uint32_t)zip_stream.size;
@@ -665,7 +670,6 @@ static inline spk_res spk_unpack_internal(const char* pkg_path, const char* outp
         char file_out_path[2048];
         snprintf(file_out_path, sizeof(file_out_path), "%s/%s", output_dir, filename);
 
-        /* Create directory hierarchy */
         char* last_slash = strrchr(file_out_path, '/');
         if (last_slash) {
             *last_slash = '\0';
