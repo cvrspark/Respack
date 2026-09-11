@@ -39,6 +39,7 @@ SOFTWARE.
 #include <cstring>
 #include <filesystem>
 #include <fstream>
+#include <iterator>
 #include <random>
 #include <stdexcept>
 #include <string>
@@ -341,8 +342,9 @@ res pack_internal(const std::string& dir, const std::string& output_pkg, const s
             std::string rel_path = fs::relative(entry.path(), src_dir).generic_string();
 
             std::ifstream in(entry.path(), std::ios::binary);
-            if (!in)
-                continue;
+            if (!in.is_open()) {
+                return {status::io_error, "Failed to open input file: " + rel_path};
+            }
 
             std::vector<uint8_t> content((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
 
@@ -358,7 +360,7 @@ res pack_internal(const std::string& dir, const std::string& output_pkg, const s
 
             util::append_struct(zip_stream, lfh);
             zip_stream.insert(zip_stream.end(), rel_path.begin(), rel_path.end());
-            zip_stream.insert(zip_stream.end(), content.begin(), content.end());
+            zip_stream.insert(zip_stream.end(), std::make_move_iterator(content.begin()), std::make_move_iterator(content.end()));
 
             entries.push_back(meta);
         }
@@ -432,14 +434,19 @@ read_res read_pack_internal(const std::string& pkg_path, const std::vector<uint8
         std::string filename(reinterpret_cast<const char*>(buffer.data() + cursor), lfh.file_name_length);
         cursor += lfh.file_name_length + lfh.extra_field_length;
 
-        std::vector<uint8_t> file_data(buffer.begin() + cursor, buffer.begin() + cursor + lfh.compressed_size);
+        files.emplace_back(
+            file_entry{
+                std::move(filename),
+                std::vector<uint8_t>(
+                    std::make_move_iterator(buffer.begin() + cursor), std::make_move_iterator(buffer.begin() + cursor + lfh.compressed_size)
+                )
+            }
+        );
         cursor += lfh.compressed_size;
 
-        if (crypto::calculate_crc32(file_data) != lfh.crc32) {
-            return {status::corrupted_data, "CRC32 mismatch on file: " + filename, {}};
+        if (crypto::calculate_crc32(files.back().data) != lfh.crc32) {
+            return {status::corrupted_data, "CRC32 mismatch on file: " + files.back().name, {}};
         }
-
-        files.push_back(file_entry{std::move(filename), std::move(file_data)});
     }
 
     return {status::ok, "Read successfully.", std::move(files)};
