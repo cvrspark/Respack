@@ -5,7 +5,7 @@ Bundles folders into `.rvlt` archives with optional ChaCha20 encryption and CRC3
 ## Files
 
 - `librespack_c.h` – C99 header.
-- `librespack.hxx` – C++17 header.
+- `librespack.hxx` – C++ header.
 
 ---
 
