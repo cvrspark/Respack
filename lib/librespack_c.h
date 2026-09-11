@@ -9,7 +9,6 @@ d888b    `Y8bod8P' 8""888P'  888bod8P' `Y888""8o `Y8bod8P' o888o o888o
                              888
                             o888o
 
-
 **MIT License**
 
 Copyright (c) 2026 respack contributors
