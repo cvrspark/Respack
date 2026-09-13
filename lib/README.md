@@ -191,7 +191,7 @@ int main() {
 // Custom exit helper using C++23 features
 [[noreturn]] void exit(const spk::respack::status& code, const std::string& message) {
     std::cerr << std::format("Error [Code: {}]: {}\n", std::to_underlying(code), message);
-    std::exit(EXIT_FAILURE);
+    std::exit((int)code);
 }
 
 int main() {
