@@ -1,6 +1,6 @@
 ```text
                                                             oooo
-                                                            `888
+CLI                                                         `888
 oooo d8b  .ooooo.   .oooo.o oo.ooooo.   .oooo.    .ooooo.   888  oooo
 `888""8P d88' `88b d88(  "8  888' `88b `P  )88b  d88' `"Y8  888 .8P'
  888     888ooo888 `"Y88b.   888   888  .oP"888  888        888888.
@@ -10,15 +10,6 @@ d888b    `Y8bod8P' 8""888P'  888bod8P' `Y888""8o `Y8bod8P' o888o o888o
                             o888o
 
 ```
-
----
-
-## Features
-
-- **Pack & Unpack**: Bundle directory trees into `.rvlt` files and extract them back.
-- **Encryption**: Optional symmetric encryption using ChaCha20.
-- **Key Generation**: Generate random Base64URL keys on the fly.
-- **Cross-Platform**: Zero external runtime dependencies (statically linked).
 
 ---
 

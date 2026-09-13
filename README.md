@@ -1,4 +1,4 @@
-```markdown
+```text
                                                             oooo
                                                             `888
 oooo d8b  .ooooo.   .oooo.o oo.ooooo.   .oooo.    .ooooo.   888  oooo
@@ -8,6 +8,7 @@ oooo d8b  .ooooo.   .oooo.o oo.ooooo.   .oooo.    .ooooo.   888  oooo
 d888b    `Y8bod8P' 8""888P'  888bod8P' `Y888""8o `Y8bod8P' o888o o888o
                              888
                             o888o
+```
 
 A fast, lightweight asset packaging and encryption library written in C++ for game development and application runtime resources, alongside its command-line tool `respack`.
 
@@ -15,7 +16,7 @@ A fast, lightweight asset packaging and encryption library written in C++ for ga
 
 ## Overview
 
-[`librespack`](lib/README.md) allows you to archive, encrypt, and load embedded asset files directly from RAM without extracting them to disk. It pairs seamlessly with rendering and game frameworks like Raylib, custom OpenGL engines, and asset pipelines.
+`librespack` allows you to archive, encrypt, and load embedded asset files directly from RAM without extracting them to disk. It pairs seamlessly with rendering and game frameworks like Raylib, custom OpenGL engines, and asset pipelines.
 
 * **[`respack`](src/README.md) (CLI):** Command-line tool for packing, unpacking, and key generation during build steps.
 * **[`librespack`](lib/README.md) (C++ Library):** Embeddable header/library for reading packed assets directly in memory at runtime.
@@ -33,5 +34,3 @@ A fast, lightweight asset packaging and encryption library written in C++ for ga
 | **Generate keys** | ✓ | ✗ |
 | **Convert keys** | ✓ | ✓ |
 | **Read from RAM** | ✗ | ✓ |
-
-```
