@@ -17,7 +17,16 @@
             }
         },
         {
-            "name": "release",
+            "name": "windows",
+            "inherits": "default-base",
+            "displayName": "Release Static (GCC)",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "USE_GCC": "ON"
+            }
+        },
+        {
+            "name": "linux",
             "inherits": "default-base",
             "displayName": "Release Static (GCC)",
             "cacheVariables": {
@@ -33,11 +42,11 @@
         },
         {
             "name": "windows",
-            "configurePreset": "release"
+            "configurePreset": "windows"
         },
         {
             "name": "linux",
-            "configurePreset": "release"
+            "configurePreset": "linux"
         }
     ]
 }

@@ -29,10 +29,8 @@ std::vector<uint8_t> gen_key() {
     std::vector<uint8_t> key(KEY_SIZE);
 
     std::random_device rd;
-    std::uniform_int_distribution<uint16_t> dist(0, 255);
-
     for (size_t i = 0; i < KEY_SIZE; ++i) {
-        key[i] = static_cast<uint8_t>(dist(rd));
+        key[i] = static_cast<uint8_t>(rd() & 0xFF);
     }
 
     return key;
@@ -46,7 +44,10 @@ std::string key_to_string(const std::vector<uint8_t>& key) {
     size_t len = key.size();
 
     while (len >= 3) {
-        uint32_t val = (key[i] << 16) | (key[i + 1] << 8) | key[i + 2];
+        uint32_t val = (static_cast<uint32_t>(key[i]) << 16) |
+                       (static_cast<uint32_t>(key[i + 1]) << 8) |
+                       static_cast<uint32_t>(key[i + 2]);
+
         result.push_back(BASE64URL_CHARS[(val >> 18) & 0x3F]);
         result.push_back(BASE64URL_CHARS[(val >> 12) & 0x3F]);
         result.push_back(BASE64URL_CHARS[(val >> 6) & 0x3F]);
@@ -56,12 +57,15 @@ std::string key_to_string(const std::vector<uint8_t>& key) {
     }
 
     if (len == 2) {
-        uint32_t val = (key[i] << 16) | (key[i + 1] << 8);
+        uint32_t val = (static_cast<uint32_t>(key[i]) << 16) |
+                       (static_cast<uint32_t>(key[i + 1]) << 8);
+
         result.push_back(BASE64URL_CHARS[(val >> 18) & 0x3F]);
         result.push_back(BASE64URL_CHARS[(val >> 12) & 0x3F]);
         result.push_back(BASE64URL_CHARS[(val >> 6) & 0x3F]);
     } else if (len == 1) {
-        uint32_t val = key[i] << 16;
+        uint32_t val = static_cast<uint32_t>(key[i]) << 16;
+
         result.push_back(BASE64URL_CHARS[(val >> 18) & 0x3F]);
         result.push_back(BASE64URL_CHARS[(val >> 12) & 0x3F]);
     }
@@ -80,8 +84,10 @@ std::vector<uint8_t> key_from_string(const std::string& key_str) {
 
     size_t i = 0;
     while (len >= 4) {
-        uint32_t val = (base64url_char_to_val(key_str[i]) << 18) | (base64url_char_to_val(key_str[i + 1]) << 12) |
-                       (base64url_char_to_val(key_str[i + 2]) << 6) | base64url_char_to_val(key_str[i + 3]);
+        uint32_t val = (static_cast<uint32_t>(base64url_char_to_val(key_str[i])) << 18) |
+                       (static_cast<uint32_t>(base64url_char_to_val(key_str[i + 1])) << 12) |
+                       (static_cast<uint32_t>(base64url_char_to_val(key_str[i + 2])) << 6) |
+                       static_cast<uint32_t>(base64url_char_to_val(key_str[i + 3]));
 
         key.push_back((val >> 16) & 0xFF);
         key.push_back((val >> 8) & 0xFF);
@@ -92,13 +98,30 @@ std::vector<uint8_t> key_from_string(const std::string& key_str) {
     }
 
     if (len == 3) {
-        uint32_t val = (base64url_char_to_val(key_str[i]) << 18) | (base64url_char_to_val(key_str[i + 1]) << 12) |
-                       (base64url_char_to_val(key_str[i + 2]) << 6);
+        uint8_t c0 = base64url_char_to_val(key_str[i]);
+        uint8_t c1 = base64url_char_to_val(key_str[i + 1]);
+        uint8_t c2 = base64url_char_to_val(key_str[i + 2]);
+
+        if (c2 & 0x03) {
+            throw std::invalid_argument("Invalid base64url padding bits in key.");
+        }
+
+        uint32_t val = (static_cast<uint32_t>(c0) << 18) |
+                       (static_cast<uint32_t>(c1) << 12) |
+                       (static_cast<uint32_t>(c2) << 6);
 
         key.push_back((val >> 16) & 0xFF);
         key.push_back((val >> 8) & 0xFF);
     } else if (len == 2) {
-        uint32_t val = (base64url_char_to_val(key_str[i]) << 18) | (base64url_char_to_val(key_str[i + 1]) << 12);
+        uint8_t c0 = base64url_char_to_val(key_str[i]);
+        uint8_t c1 = base64url_char_to_val(key_str[i + 1]);
+
+        if (c1 & 0x0F) {
+            throw std::invalid_argument("Invalid base64url padding bits in key.");
+        }
+
+        uint32_t val = (static_cast<uint32_t>(c0) << 18) |
+                       (static_cast<uint32_t>(c1) << 12);
 
         key.push_back((val >> 16) & 0xFF);
     } else if (len == 1) {

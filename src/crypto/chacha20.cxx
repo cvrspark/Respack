@@ -10,23 +10,17 @@ namespace {
 
 #define ROTL32(v, n) (((v) << (n)) | ((v) >> (32 - (n))))
 
-#define CHACHA20_QUARTERROUND(a, b, c, d)                                                                                                  \
-    a += b;                                                                                                                                \
-    d ^= a;                                                                                                                                \
-    d = ROTL32(d, 16);                                                                                                                     \
-    c += d;                                                                                                                                \
-    b ^= c;                                                                                                                                \
-    b = ROTL32(b, 12);                                                                                                                     \
-    a += b;                                                                                                                                \
-    d ^= a;                                                                                                                                \
-    d = ROTL32(d, 8);                                                                                                                      \
-    c += d;                                                                                                                                \
-    b ^= c;                                                                                                                                \
-    b = ROTL32(b, 7);
+#define CHACHA20_QUARTERROUND(a, b, c, d) \
+    a += b; d ^= a; d = ROTL32(d, 16);    \
+    c += d; b ^= c; b = ROTL32(b, 12);    \
+    a += b; d ^= a; d = ROTL32(d, 8);     \
+    c += d; b ^= c; b = ROTL32(b, 7);
 
 inline uint32_t load32_le(const uint8_t* src) {
-    return static_cast<uint32_t>(src[0]) | (static_cast<uint32_t>(src[1]) << 8) | (static_cast<uint32_t>(src[2]) << 16) |
-           (static_cast<uint32_t>(src[3]) << 24);
+    return static_cast<uint32_t>(src[0]) |
+          (static_cast<uint32_t>(src[1]) << 8) |
+          (static_cast<uint32_t>(src[2]) << 16) |
+          (static_cast<uint32_t>(src[3]) << 24);
 }
 
 inline void store32_le(uint8_t* dst, uint32_t val) {
@@ -37,19 +31,22 @@ inline void store32_le(uint8_t* dst, uint32_t val) {
 }
 
 void chacha20_block(uint32_t out[16], const uint32_t key[8], const uint32_t nonce[3], uint32_t counter) {
-    static const char constants[] = "expand 32-byte k";
+    static const uint8_t constants[16] = {
+        'e','x','p','a','n','d',' ','3','2','-','b','y','t','e',' ','k'
+    };
     uint32_t state[16];
 
-    state[0] = load32_le(reinterpret_cast<const uint8_t*>(constants));
-    state[1] = load32_le(reinterpret_cast<const uint8_t*>(constants + 4));
-    state[2] = load32_le(reinterpret_cast<const uint8_t*>(constants + 8));
-    state[3] = load32_le(reinterpret_cast<const uint8_t*>(constants + 12));
+    state[0] = load32_le(constants);
+    state[1] = load32_le(constants + 4);
+    state[2] = load32_le(constants + 8);
+    state[3] = load32_le(constants + 12);
 
-    for (int i = 0; i < 8; ++i)
-        state[4 + i] = key[i];
+    for (int i = 0; i < 8; ++i) state[4 + i] = key[i];
+
     state[12] = counter;
-    for (int i = 0; i < 3; ++i)
-        state[13 + i] = nonce[i];
+    state[13] = nonce[0];
+    state[14] = nonce[1];
+    state[15] = nonce[2];
 
     std::memcpy(out, state, sizeof(state));
 
@@ -65,17 +62,18 @@ void chacha20_block(uint32_t out[16], const uint32_t key[8], const uint32_t nonc
         CHACHA20_QUARTERROUND(out[3], out[4], out[9], out[14]);
     }
 
-    for (int i = 0; i < 16; ++i) {
-        out[i] += state[i];
-    }
+    for (int i = 0; i < 16; ++i) out[i] += state[i];
 }
 
 } // namespace
 
 void generate_nonce(uint8_t nonce[12]) {
     std::random_device rd;
-    for (int i = 0; i < 12; ++i) {
-        nonce[i] = static_cast<uint8_t>(rd());
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<uint32_t> dist(0, 0xFFFFFFFF);
+
+    for (int i = 0; i < 3; ++i) {
+        store32_le(nonce + i * 4, dist(gen));
     }
 }
 
