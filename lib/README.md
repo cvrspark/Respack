@@ -18,17 +18,17 @@ spk::respack::key_from_string(const std::string& key_str); // std::vector<uint8_
 spk::respack::key_to_string(const std::vector<uint8_t>& key); // std::string
 
 // packing
-spk::respack::pack(const std::string& dir, const std::string& output_pkg); // spk::res (code, message)
+spk::respack::pack(const std::string& dir, const std::string& output_pkg); // spk::respack::res (code, message)
 spk::respack::pack(const std::string& dir, const std::string& output_pkg, const std::vector<uint8_t>& key); // spk::res (code, message)
 
 // unpacking
-spk::respack::unpack(const std::string& pkg_path, const std::string& output_dir); // spk::res (code, message)
-spk::respack::unpack(const std::string& pkg_path, const std::string& output_dir, const std::vector<uint8_t>& key); // spk::res (code, message)
+spk::respack::unpack(const std::string& pkg_path, const std::string& output_dir); // spk::respack::res (code, message)
+spk::respack::unpack(const std::string& pkg_path, const std::string& output_dir, const std::vector<uint8_t>& key); // spk::respack::res (code, message)
 // Note: output_dir specifies the directory created to hold unpacked files.
 
 // reading from memory (without writing to disk)
-spk::respack::read_pack(const std::string& pkg_path); // spk::read_res (code, message, map[filename : filecontent])
-spk::respack::read_pack(const std::string& pkg_path, const std::vector<uint8_t>& key); // spk::read_res (code, message, map[filename : filecontent])
+spk::respack::read_pack(const std::string& pkg_path); // spk::respack::read_res (code, message, map[filename : filecontent])
+spk::respack::read_pack(const std::string& pkg_path, const std::vector<uint8_t>& key); // spk::respack::read_res (code, message, map[filename : filecontent])
 ```
 
 ---
