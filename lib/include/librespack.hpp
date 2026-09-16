@@ -195,7 +195,7 @@ inline void chacha20_block(uint32_t out[16], const uint32_t key[8], const uint32
         CHACHA20_QUARTERROUND(out[0], out[4], out[8], out[12]);
         CHACHA20_QUARTERROUND(out[1], out[5], out[9], out[13]);
         CHACHA20_QUARTERROUND(out[2], out[6], out[10], out[14]);
-        CHACHA20_QUARTERROUND(out[3], out[7], out[8], out[13]);
+        CHACHA20_QUARTERROUND(out[3], out[7], out[11], out[15]);
 
         CHACHA20_QUARTERROUND(out[0], out[5], out[10], out[15]);
         CHACHA20_QUARTERROUND(out[1], out[6], out[11], out[12]);
