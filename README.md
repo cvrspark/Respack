@@ -19,7 +19,7 @@ A fast, lightweight asset packaging and encryption library written in C++ for ga
 `librespack` allows you to archive, encrypt, and load embedded asset files directly from RAM without extracting them to disk. It pairs seamlessly with rendering and game frameworks like Raylib, custom OpenGL engines, and asset pipelines.
 
 * **[`respack`](src/README.md) (CLI):** Command-line tool for packing, unpacking, and key generation during build steps.
-* **[`librespack`](lib/README.md) (C++ Library):** Embeddable header/library for reading packed assets directly in memory at runtime.
+* **[`librespack`](https://github.com/cvrspark/librespack/blob/main/README.md) (C++ Library):** Embeddable header/library for reading packed assets directly in memory at runtime.
 
 ---
 
