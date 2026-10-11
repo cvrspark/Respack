@@ -20,7 +20,6 @@ add_executable(respack ${SOURCES})
 target_compile_options(respack PRIVATE
     -Wall -Wextra -fansi-escape-codes
 )
-
 target_link_options(respack PRIVATE
     -static
 )
