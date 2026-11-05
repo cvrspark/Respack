@@ -6,7 +6,7 @@
 
 namespace fs = std::filesystem;
 
-void print_help_msg(std::ostream& os = std::cout) {
+static void print_help_msg(std::ostream& os = std::cout) {
     os << "Usage:\n"
        << "  respack <function> <path> [flags]\n"
        << "----------------------------------------\n"
