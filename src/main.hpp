@@ -21,4 +21,4 @@ res unpack(const std::string& pkg, const std::string& output_dir, std::span<cons
 
 } // namespace respack
 
-#define RESPACK_VERSION "2.1"
+#define RESPACK_VERSION "2.2"
