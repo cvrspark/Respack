@@ -5,15 +5,17 @@
 #include <filesystem>
 #include <fstream>
 #include <limits>
-
-namespace fs = std::filesystem;
-using namespace respack::archive;
+#include <span>
 
 namespace respack {
 
 namespace {
 
-res pack_internal(const std::string& dir, const std::string& output_pkg, const std::vector<uint8_t>* key) {
+res pack_internal(const std::string& dir, const std::string& output_pkg, std::span<const uint8_t> key, bool use_poly1305) {
+
+    namespace fs = std::filesystem;
+    using namespace respack::archive;
+
     fs::path src_dir(dir);
     
     std::error_code ec;
@@ -74,7 +76,7 @@ res pack_internal(const std::string& dir, const std::string& output_pkg, const s
                 rel_path,
                 crypto::calculate_crc32(content),
                 file_size,
-                static_cast<uint32_t>(projected_offset)
+                static_cast<uint32_t>(projected_offset),
             };
 
             LocalFileHeader lfh{};
@@ -121,8 +123,8 @@ res pack_internal(const std::string& dir, const std::string& output_pkg, const s
 
     util::append_struct(zip_stream, eocd);
 
-    if (key && !key->empty()) {
-        auto crypt_res = crypto::encrypt_payload(zip_stream, *key);
+    if (!key.empty()) {
+        auto crypt_res = crypto::encrypt_payload(zip_stream, key, use_poly1305);
         if (crypt_res.code != status::ok)
             return crypt_res;
     }
@@ -141,14 +143,14 @@ res pack_internal(const std::string& dir, const std::string& output_pkg, const s
 
 } // namespace
 
-res pack(const std::string& dir, const std::string& output_pkg) { 
-    return pack_internal(dir, output_pkg, nullptr); 
+res pack(const std::string& dir, const std::string& output_pkg, bool use_poly1305) { 
+    return pack_internal(dir, output_pkg, {}, use_poly1305); 
 }
 
-res pack(const std::string& dir, const std::string& output_pkg, const std::vector<uint8_t>& key) {
+res pack(const std::string& dir, const std::string& output_pkg, std::span<const uint8_t> key, bool use_poly1305) {
     if (key.empty())
         return {status::invalid_argument, "Key cannot be empty."};
-    return pack_internal(dir, output_pkg, &key);
+    return pack_internal(dir, output_pkg, key, use_poly1305);
 }
 
 } // namespace respack

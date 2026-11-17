@@ -19,6 +19,7 @@ static void print_help_msg(std::ostream& os = std::cout) {
        << "Flags:\n"
        << "  --key=<key>        Base64URL key to encrypt/decrypt\n"
        << "  -o, --output=<out> Custom output path for archive/folder\n"
+       << "  --no-poly1305, -old Use legacy non-AEAD mode (disable Poly1305 tag)\n"
        << "  -h, --help         Show this help message\n"
        << "  -v, --version      Prints respack version\n";
 }
@@ -37,8 +38,8 @@ int main(int argc, char* argv[]) {
     }
 
     if (action == "-v" || action == "--version") {
-        std::cout << "Respack Version: " << RESPAKC_VERSION << "\n";
-        std::cout << "GitHub: https://gtihub.com/cvrspark/Respack\n";
+        std::cout << "Respack Version: " << RESPACK_VERSION << "\n";
+        std::cout << "GitHub: https://github.com/cvrspark/Respack\n";
         return 0;
     }
 
@@ -57,8 +58,10 @@ int main(int argc, char* argv[]) {
     std::string target_path = argv[2];
     if (target_path.ends_with('/') || target_path.ends_with('\\'))
         target_path.pop_back();
+
     std::string key_str;
     std::string custom_output;
+    bool use_poly1305 = true;
 
     for (int i = 3; i < argc; ++i) {
         std::string arg = argv[i];
@@ -68,6 +71,8 @@ int main(int argc, char* argv[]) {
             custom_output = arg.substr(9);
         } else if (arg == "-o" && i + 1 < argc) {
             custom_output = argv[++i];
+        } else if (arg == "--no-poly1305" || arg == "-old") {
+            use_poly1305 = false;
         }
     }
 
@@ -77,10 +82,10 @@ int main(int argc, char* argv[]) {
         std::string out_pkg = custom_output.empty() ? (target_path + ".rvlt") : custom_output;
 
         if (!key_str.empty()) {
-            std::vector<uint8_t> key = respack::key_from_string(key_str);
-            result = respack::pack(target_path, out_pkg, key);
+            auto key = respack::key_from_string(key_str);
+            result = respack::pack(target_path, out_pkg, key, use_poly1305);
         } else {
-            result = respack::pack(target_path, out_pkg);
+            result = respack::pack(target_path, out_pkg,use_poly1305);
         }
 
     } else if (action == "-pgk" || action == "--packgenkey") {
@@ -89,7 +94,7 @@ int main(int argc, char* argv[]) {
         std::vector<uint8_t> key = respack::gen_key();
         std::string generated_key_str = respack::key_to_string(key);
 
-        result = respack::pack(target_path, out_pkg, key);
+        result = respack::pack(target_path, out_pkg, key, use_poly1305);
         if (result) {
             std::cout << "Generated Key: " << generated_key_str << "\n";
         }
@@ -102,10 +107,10 @@ int main(int argc, char* argv[]) {
         }
 
         if (!key_str.empty()) {
-            std::vector<uint8_t> key = respack::key_from_string(key_str);
-            result = respack::unpack(target_path, out_dir, key);
+            auto key = respack::key_from_string(key_str);
+            result = respack::unpack(target_path, out_dir, key, use_poly1305);
         } else {
-            result = respack::unpack(target_path, out_dir);
+            result = respack::unpack(target_path, out_dir, use_poly1305);
         }
 
     } else {

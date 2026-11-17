@@ -4,6 +4,7 @@
 #include "../main.hpp"
 #include <filesystem>
 #include <fstream>
+#include <span>
 
 namespace fs = std::filesystem;
 using namespace respack::archive;
@@ -12,7 +13,7 @@ namespace respack {
 
 namespace {
 
-res unpack_internal(const std::string& pkg_path, const std::string& output_dir, const std::vector<uint8_t>* key) {
+res unpack_internal(const std::string& pkg_path, const std::string& output_dir, std::span<const uint8_t> key, bool expect_poly1305) {
     std::ifstream in(pkg_path, std::ios::binary | std::ios::ate);
     if (!in.is_open())
         return {status::io_error, "Failed to open package file."};
@@ -27,8 +28,8 @@ res unpack_internal(const std::string& pkg_path, const std::string& output_dir, 
         return {status::io_error, "Failed to read package file into memory."};
     }
 
-    if (key && !key->empty()) {
-        auto crypt_res = crypto::decrypt_payload(buffer, *key);
+    if (!key.empty()) {
+        auto crypt_res = crypto::decrypt_payload(buffer, key, expect_poly1305);
         if (crypt_res.code != status::ok)
             return crypt_res;
     }
@@ -90,14 +91,14 @@ res unpack_internal(const std::string& pkg_path, const std::string& output_dir, 
 
 } // namespace
 
-res unpack(const std::string& pkg_path, const std::string& output_dir) { 
-    return unpack_internal(pkg_path, output_dir, nullptr); 
+res unpack(const std::string& pkg_path, const std::string& output_dir, bool expect_poly1305) { 
+    return unpack_internal(pkg_path, output_dir, {}, expect_poly1305); 
 }
 
-res unpack(const std::string& pkg_path, const std::string& output_dir, const std::vector<uint8_t>& key) {
+res unpack(const std::string& pkg_path, const std::string& output_dir, std::span<const uint8_t> key, bool expect_poly1305) {
     if (key.empty())
         return {status::invalid_argument, "Key cannot be empty."};
-    return unpack_internal(pkg_path, output_dir, &key);
+    return unpack_internal(pkg_path, output_dir, key, expect_poly1305);
 }
 
 } // namespace respack

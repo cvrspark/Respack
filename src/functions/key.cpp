@@ -1,13 +1,15 @@
 #include "../main.hpp"
+#include <array>
 #include <random>
+#include <span>
 #include <stdexcept>
 
 namespace respack {
 
 namespace {
 constexpr char BASE64URL_CHARS[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                                   "abcdefghijklmnopqrstuvwxyz"
-                                   "0123456789-_";
+                                  "abcdefghijklmnopqrstuvwxyz"
+                                  "0123456789-_";
 
 uint8_t base64url_char_to_val(char c) {
     if (c >= 'A' && c <= 'Z')
@@ -36,7 +38,7 @@ std::vector<uint8_t> gen_key() {
     return key;
 }
 
-std::string key_to_string(const std::vector<uint8_t>& key) {
+std::string key_to_string(std::span<const uint8_t> key) {
     std::string result;
     result.reserve(((key.size() + 2) / 3) * 4);
 
@@ -73,31 +75,31 @@ std::string key_to_string(const std::vector<uint8_t>& key) {
     return result;
 }
 
-std::vector<uint8_t> key_from_string(const std::string& key_str) {
-    std::vector<uint8_t> key;
+std::array<uint8_t, 32> key_from_string(const std::string& key_str) {
+    std::array<uint8_t, 32> key{};
     size_t len = key_str.size();
 
     if (len == 0)
         return key;
 
-    key.reserve((len * 3) / 4);
-
     size_t i = 0;
-    while (len >= 4) {
+    size_t out_idx = 0;
+
+    while (len >= 4 && out_idx + 3 <= 32) {
         uint32_t val = (static_cast<uint32_t>(base64url_char_to_val(key_str[i])) << 18) |
                        (static_cast<uint32_t>(base64url_char_to_val(key_str[i + 1])) << 12) |
                        (static_cast<uint32_t>(base64url_char_to_val(key_str[i + 2])) << 6) |
                        static_cast<uint32_t>(base64url_char_to_val(key_str[i + 3]));
 
-        key.push_back((val >> 16) & 0xFF);
-        key.push_back((val >> 8) & 0xFF);
-        key.push_back(val & 0xFF);
+        key[out_idx++] = (val >> 16) & 0xFF;
+        key[out_idx++] = (val >> 8) & 0xFF;
+        key[out_idx++] = val & 0xFF;
 
         i += 4;
         len -= 4;
     }
 
-    if (len == 3) {
+    if (len == 3 && out_idx + 2 <= 32) {
         uint8_t c0 = base64url_char_to_val(key_str[i]);
         uint8_t c1 = base64url_char_to_val(key_str[i + 1]);
         uint8_t c2 = base64url_char_to_val(key_str[i + 2]);
@@ -110,9 +112,9 @@ std::vector<uint8_t> key_from_string(const std::string& key_str) {
                        (static_cast<uint32_t>(c1) << 12) |
                        (static_cast<uint32_t>(c2) << 6);
 
-        key.push_back((val >> 16) & 0xFF);
-        key.push_back((val >> 8) & 0xFF);
-    } else if (len == 2) {
+        key[out_idx++] = (val >> 16) & 0xFF;
+        key[out_idx++] = (val >> 8) & 0xFF;
+    } else if (len == 2 && out_idx + 1 <= 32) {
         uint8_t c0 = base64url_char_to_val(key_str[i]);
         uint8_t c1 = base64url_char_to_val(key_str[i + 1]);
 
@@ -123,7 +125,7 @@ std::vector<uint8_t> key_from_string(const std::string& key_str) {
         uint32_t val = (static_cast<uint32_t>(c0) << 18) |
                        (static_cast<uint32_t>(c1) << 12);
 
-        key.push_back((val >> 16) & 0xFF);
+        key[out_idx++] = (val >> 16) & 0xFF;
     } else if (len == 1) {
         throw std::invalid_argument("Invalid base64url string length.");
     }
