@@ -31,11 +31,11 @@ respack <function> <path> [flags]
 
 ### Options
 
-| Flag                         | Description                                |
-| ---------------------------- | ------------------------------------------ |
-| `--key=<key>`                | Base64URL key for encryption or decryption |
-| `-o <out>`, `--output=<out>` | Custom output destination path             |
-| `-old`, `--no-poly1305`      | Custom output destination path             |
+| Flag                         | Description                                    |
+| ---------------------------- | -----------------------------------------------|
+| `--key=<key>`                | Base64URL key for encryption or decryption     |
+| `-o <out>`, `--output=<out>` | Custom output destination path                 |
+| `-old`, `--no-poly1305`      | Use legacy non-AEAD mode (disable Poly1305 tag)|
 
 ---
 
