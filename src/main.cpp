@@ -17,11 +17,11 @@ static void print_help_msg(std::ostream& os = std::cout) {
        << "  -pgk, --packgenkey Pack and encrypt directory with a newly generated key\n"
        << "----------------------------------------\n"
        << "Flags:\n"
-       << "  --key=<key>        Base64URL key to encrypt/decrypt\n"
-       << "  -o, --output=<out> Custom output path for archive/folder\n"
-       << "  --no-poly1305, -old Use legacy non-AEAD mode (disable Poly1305 tag)\n"
-       << "  -h, --help         Show this help message\n"
-       << "  -v, --version      Prints respack version\n";
+       << "  --key=<key>         Base64URL key to encrypt/decrypt\n"
+       << "  -o, --output=<out>  Custom output path for archive/folder\n"
+       << "  -old, --no-poly1305 Use legacy non-AEAD mode (disable Poly1305 tag)\n"
+       << "  -h, --help          Show this help message\n"
+       << "  -v, --version       Prints respack version\n";
 }
 
 int main(int argc, char* argv[]) {

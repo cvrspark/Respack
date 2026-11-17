@@ -34,3 +34,4 @@ A fast, lightweight asset packaging and encryption library written in C++ for ga
 | **Generate keys** | ✓ | ✗ |
 | **Convert keys** | ✓ | ✓ |
 | **Read from RAM** | ✗ | ✓ |
+| **Poly1305 Support** | ✓ | ✓ |

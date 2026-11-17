@@ -17,7 +17,6 @@ d888b    `Y8bod8P' 8""888P'  888bod8P' `Y888""8o `Y8bod8P' o888o o888o
 
 ```bash
 respack <function> <path> [flags]
-
 ```
 
 ### Functions
@@ -36,6 +35,7 @@ respack <function> <path> [flags]
 | ---------------------------- | ------------------------------------------ |
 | `--key=<key>`                | Base64URL key for encryption or decryption |
 | `-o <out>`, `--output=<out>` | Custom output destination path             |
+| `-old`, `--no-poly1305`      | Custom output destination path             |
 
 ---
 
@@ -56,5 +56,4 @@ respack -pgk ./assets -o ./game_data.rvlt
 
 # Unpack an encrypted archive to a specific output folder
 respack -u ./game_data.rvlt --key=YOUR_BASE64URL_KEY -o ./extracted_assets
-
 ```
